@@ -15,10 +15,16 @@
  */
 package org.teavm.classlib.java.nio;
 
-class TFloatBufferOverArray extends TFloatBufferImpl {
+import org.teavm.jso.typedarrays.ArrayBufferView;
+import org.teavm.jso.typedarrays.Float32Array;
+import org.teavm.jso.typedarrays.HasArrayBufferView;
+
+class TFloatBufferOverArray extends TFloatBufferImpl implements HasArrayBufferView {
     boolean readOnly;
     int start;
     float[] array;
+    Float32Array jsArray;
+    private boolean isDirty;
 
     public TFloatBufferOverArray(int capacity) {
         this(0, capacity, new float[capacity], 0, capacity, false);
@@ -44,6 +50,7 @@ class TFloatBufferOverArray extends TFloatBufferImpl {
     @Override
     void putElement(int index, float value) {
         array[index + start] = value;
+        isDirty = true;
     }
 
     @Override
@@ -69,5 +76,19 @@ class TFloatBufferOverArray extends TFloatBufferImpl {
     @Override
     public TByteOrder order() {
         return TByteOrder.BIG_ENDIAN;
+    }
+
+    @Override
+    public ArrayBufferView getArrayBufferView() {
+        if(isDirty) {
+            isDirty = false;
+            int length = array.length;
+            jsArray = new Float32Array(length);
+            for(int i = 0; i < length; i++) {
+                float value = array[i];
+                jsArray.set(i, value);
+            }
+        }
+        return jsArray;
     }
 }

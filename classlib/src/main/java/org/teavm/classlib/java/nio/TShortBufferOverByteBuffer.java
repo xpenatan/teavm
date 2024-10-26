@@ -15,7 +15,10 @@
  */
 package org.teavm.classlib.java.nio;
 
-abstract class TShortBufferOverByteBuffer extends TShortBufferImpl {
+import org.teavm.jso.typedarrays.ArrayBufferView;
+import org.teavm.jso.typedarrays.HasArrayBufferView;
+
+abstract class TShortBufferOverByteBuffer extends TShortBufferImpl implements HasArrayBufferView {
     TByteBufferImpl byteByffer;
     boolean readOnly;
     int start;
@@ -46,5 +49,10 @@ abstract class TShortBufferOverByteBuffer extends TShortBufferImpl {
     @Override
     boolean readOnly() {
         return readOnly;
+    }
+
+    @Override
+    public ArrayBufferView getArrayBufferView() {
+        return byteByffer.getArrayBufferView();
     }
 }

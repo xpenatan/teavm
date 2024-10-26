@@ -15,10 +15,16 @@
  */
 package org.teavm.classlib.java.nio;
 
-class TIntBufferOverArray extends TIntBufferImpl {
+import org.teavm.jso.typedarrays.ArrayBufferView;
+import org.teavm.jso.typedarrays.HasArrayBufferView;
+import org.teavm.jso.typedarrays.Int32Array;
+
+class TIntBufferOverArray extends TIntBufferImpl implements HasArrayBufferView {
     boolean readOnly;
     int start;
     int[] array;
+    Int32Array jsArray;
+    private boolean isDirty;
 
     public TIntBufferOverArray(int capacity) {
         this(0, capacity, new int[capacity], 0, capacity, false);
@@ -43,6 +49,7 @@ class TIntBufferOverArray extends TIntBufferImpl {
 
     @Override
     void putElement(int index, int value) {
+        isDirty = true;
         array[index + start] = value;
     }
 
@@ -69,5 +76,19 @@ class TIntBufferOverArray extends TIntBufferImpl {
     @Override
     public TByteOrder order() {
         return TByteOrder.BIG_ENDIAN;
+    }
+
+    @Override
+    public ArrayBufferView getArrayBufferView() {
+        if(isDirty) {
+            isDirty = false;
+            int length = array.length;
+            jsArray = new Int32Array(length);
+            for(int i = 0; i < length; i++) {
+                int value = array[i];
+                jsArray.set(i, value);
+            }
+        }
+        return jsArray;
     }
 }

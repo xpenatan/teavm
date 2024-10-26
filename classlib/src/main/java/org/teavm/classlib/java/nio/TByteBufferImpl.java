@@ -63,6 +63,7 @@ class TByteBufferImpl extends TByteBuffer {
             throw new TBufferOverflowException();
         }
         array[start + position++] = b;
+        isDirty = true;
         return this;
     }
 
@@ -83,6 +84,7 @@ class TByteBufferImpl extends TByteBuffer {
             throw new IndexOutOfBoundsException("Index " + index + " is outside of range [0;" + limit + ")");
         }
         array[start + index] = b;
+        isDirty = true;
         return this;
     }
 
@@ -145,6 +147,7 @@ class TByteBufferImpl extends TByteBuffer {
             array[start + position++] = (byte) value;
             array[start + position++] = (byte) (value >> 8);
         }
+        isDirty = true;
         return this;
     }
 
@@ -153,6 +156,7 @@ class TByteBufferImpl extends TByteBuffer {
         if (index < 0 || index + 1 >= limit) {
             throw new IndexOutOfBoundsException("Index " + index + " is outside of range [0;" + (limit - 1) + ")");
         }
+        isDirty = true;
         int a = array[start + index] & 0xFF;
         int b = array[start + index + 1] & 0xFF;
         if (order == TByteOrder.BIG_ENDIAN) {
@@ -170,6 +174,7 @@ class TByteBufferImpl extends TByteBuffer {
         if (index < 0 || index + 1 >= limit) {
             throw new IndexOutOfBoundsException("Index " + index + " is outside of range [0;" + (limit - 1) + ")");
         }
+        isDirty = true;
         if (order == TByteOrder.BIG_ENDIAN) {
             array[start + index] = (byte) (value >> 8);
             array[start + index + 1] = (byte) value;
@@ -213,6 +218,7 @@ class TByteBufferImpl extends TByteBuffer {
         if (position + 1 >= limit) {
             throw new TBufferOverflowException();
         }
+        isDirty = true;
         if (order == TByteOrder.BIG_ENDIAN) {
             array[start + position++] = (byte) (value >> 8);
             array[start + position++] = (byte) value;
@@ -228,6 +234,7 @@ class TByteBufferImpl extends TByteBuffer {
         if (index < 0 || index + 1 >= limit) {
             throw new IndexOutOfBoundsException("Index " + index + " is outside of range [0;" + (limit - 1) + ")");
         }
+        isDirty = true;
         int a = array[start + index] & 0xFF;
         int b = array[start + index + 1] & 0xFF;
         if (order == TByteOrder.BIG_ENDIAN) {
@@ -245,6 +252,7 @@ class TByteBufferImpl extends TByteBuffer {
         if (index < 0 || index + 1 >= limit) {
             throw new IndexOutOfBoundsException("Index " + index + " is outside of range [0;" + (limit - 1) + ")");
         }
+        isDirty = true;
         if (order == TByteOrder.BIG_ENDIAN) {
             array[start + index] = (byte) (value >> 8);
             array[start + index + 1] = (byte) value;
@@ -290,6 +298,7 @@ class TByteBufferImpl extends TByteBuffer {
         if (position + 3 >= limit) {
             throw new TBufferOverflowException();
         }
+        isDirty = true;
         if (order == TByteOrder.BIG_ENDIAN) {
             array[start + position++] = (byte) (value >> 24);
             array[start + position++] = (byte) (value >> 16);
@@ -328,6 +337,7 @@ class TByteBufferImpl extends TByteBuffer {
         if (index < 0 || index + 3 >= limit) {
             throw new IndexOutOfBoundsException("Index " + index + " is outside of range [0;" + (limit - 3) + ")");
         }
+        isDirty = true;
         if (order == TByteOrder.BIG_ENDIAN) {
             array[start + index] = (byte) (value >> 24);
             array[start + index + 1] = (byte) (value >> 16);
@@ -421,6 +431,7 @@ class TByteBufferImpl extends TByteBuffer {
         if (position + 7 >= limit) {
             throw new TBufferOverflowException();
         }
+        isDirty = true;
         if (order == TByteOrder.BIG_ENDIAN) {
             array[start + position++] = (byte) (value >> 56);
             array[start + position++] = (byte) (value >> 48);
@@ -472,6 +483,7 @@ class TByteBufferImpl extends TByteBuffer {
         if (index < 0 || index + 3 >= limit) {
             throw new IndexOutOfBoundsException("Index " + index + " is outside of range [0;" + (limit - 3) + ")");
         }
+        isDirty = true;
         if (order == TByteOrder.BIG_ENDIAN) {
             array[start + index + 0] = (byte) (value >> 56);
             array[start + index + 1] = (byte) (value >> 48);

@@ -17,10 +17,16 @@ package org.teavm.classlib.java.nio;
 
 import java.util.Objects;
 import org.teavm.classlib.java.lang.TComparable;
+import org.teavm.jso.typedarrays.ArrayBufferView;
+import org.teavm.jso.typedarrays.HasArrayBufferView;
+import org.teavm.jso.typedarrays.Int8Array;
 
-public abstract class TByteBuffer extends TBuffer implements TComparable<TByteBuffer> {
+public abstract class TByteBuffer extends TBuffer implements TComparable<TByteBuffer>, HasArrayBufferView {
     int start;
     byte[] array;
+    Int8Array jsArray;
+    boolean isDirty = true;
+
     TByteOrder order = TByteOrder.BIG_ENDIAN;
 
     TByteBuffer(int start, int capacity, byte[] array, int position, int limit) {
@@ -315,5 +321,19 @@ public abstract class TByteBuffer extends TBuffer implements TComparable<TByteBu
     public TByteBuffer position(int newPosition) {
         super.position(newPosition);
         return this;
+    }
+
+    @Override
+    public ArrayBufferView getArrayBufferView() {
+        if(isDirty) {
+            isDirty = false;
+            int length = array.length;
+            jsArray = new Int8Array(length);
+            for(int i = 0; i < length; i++) {
+                byte value = array[i];
+                jsArray.set(i, value);
+            }
+        }
+        return jsArray;
     }
 }

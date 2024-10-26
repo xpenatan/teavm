@@ -15,10 +15,16 @@
  */
 package org.teavm.classlib.java.nio;
 
-class TShortBufferOverArray extends TShortBufferImpl {
+import org.teavm.jso.typedarrays.ArrayBufferView;
+import org.teavm.jso.typedarrays.HasArrayBufferView;
+import org.teavm.jso.typedarrays.Int16Array;
+
+class TShortBufferOverArray extends TShortBufferImpl implements HasArrayBufferView {
     boolean readOnly;
     int start;
     short[] array;
+    Int16Array jsArray;
+    private boolean isDirty;
 
     public TShortBufferOverArray(int capacity) {
         this(0, capacity, new short[capacity], 0, capacity, false);
@@ -43,6 +49,7 @@ class TShortBufferOverArray extends TShortBufferImpl {
 
     @Override
     void putElement(int index, short value) {
+        isDirty = true;
         array[index + start] = value;
     }
 
@@ -69,5 +76,19 @@ class TShortBufferOverArray extends TShortBufferImpl {
     @Override
     public TByteOrder order() {
         return TByteOrder.BIG_ENDIAN;
+    }
+
+    @Override
+    public ArrayBufferView getArrayBufferView() {
+        if(isDirty) {
+            isDirty = false;
+            int length = array.length;
+            jsArray = new Int16Array(length);
+            for(int i = 0; i < length; i++) {
+                short value = array[i];
+                jsArray.set(i, value);
+            }
+        }
+        return jsArray;
     }
 }
